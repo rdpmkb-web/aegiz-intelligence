@@ -1,0 +1,11 @@
+#python
+__pycache__/
+venv/
+*.pyc
+
+#Note / Frontend
+node_modulares/
+.next/
+
+# Sistema
+Dm_Store
