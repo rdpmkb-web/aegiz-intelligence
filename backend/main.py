@@ -77,4 +77,4 @@ def analisar_negocio(dados: BusinessInput):
 def root():
     return {"message": "Aegiz Intelligence API está online e operando! 🚀"}
 
-enzogogomes3
+
