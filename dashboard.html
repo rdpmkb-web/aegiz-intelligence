@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aegiz Intelligence | Dashboard Operational Panel</title>
+    <style>
+        :root {
+            --bg-main: #060913;
+            --bg-card: #0d1527;
+            --bg-input: #121d33;
+            --accent-blue: #38bdf8;
+            --accent-purple: #a855f7;
+            --status-green: #10b981;
+            --status-alert: #f59e0b;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --border-color: #1e293b;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Topbar Header */
+        header {
+            background-color: var(--bg-card);
+            border-bottom: 1px solid var(--border-color);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo { font-size: 1.4rem; font-weight: bold; color: var(--accent-blue); letter-spacing: 1px; }
+        .system-status { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; color: var(--text-muted); }
+        .pulse-dot { width: 10px; height: 10px; background-color: var(--status-green); border-radius: 50%; box-shadow: 0 0 8px var(--status-green); animation: pulse 2s infinite; }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+
+        /* Main Workspace Layout */
+        .workspace {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            padding: 20px;
+            max-width: 1400px;
+            width: 100%;
+            margin: 0 auto;
+            flex-grow: 1;
+        }
+
+        @media (min-width: 992px) {
+            .workspace { grid-template-columns: 2fr 1fr; }
+        }
+
+        /* Left Side: Metrics and Agents Monitoring */
+        .main-panel { display: flex; flex-direction: column; gap: 20px; }
+
+        /* Multi-attribute entity tables styled layout replacing standard lists */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, min-width: 200px);
+            gap: 15px;
+            width: 100%;
+        }
+
+        .metric-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .metric-title { font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; }
+        .metric-value { font-size: 1.8rem; font-weight: bold; color: var(--text-main); }
+        .metric-value.blue { color: var(--accent-blue); }
+        .metric-value.purple { color: var(--accent-purple); }
+        .metric-value.green { color: var(--status-green); }
+
+        /* Table Components for Entities Overview */
+        .table-container {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+        }
+
+        .panel-heading { font-size: 1.1rem; font-weight: 600; margin-bottom: 15px; color: var(--text-main); display: flex; justify-content: space-between; align-items: center; }
+
+        table { width: 100%; border-collapse: collapse; text-align: left; min-width: 500px; }
+        th { padding: 12px; color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; border-bottom: 2px solid var(--border-color); }
+        td { padding: 14px 12px; font-size: 0.95rem; border-bottom: 1px solid var(--border-color); }
+        tr:hover { background-color: rgba(255, 255, 255, 0.02); }
+
+        .badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; }
+        .badge.active { background-color: rgba(16, 185, 129, 0.15); color: var(--status-green); }
+        .badge.pending { background-color: rgba(245, 158, 11, 0.15); color: var(--status-alert); }
+
+        /* Right Side: Cintia Beje Orchestrator Chat Interface */
+        .chat-panel {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            height: 600px;
+        }
+
+        .chat-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .avatar-container { position: relative; }
+        .chat-avatar { width: 40px; height: 40px; background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #fff; }
+        .chat-status-dot { width: 12px; height: 12px; background-color: var(--status-green); border: 2px solid var(--bg-card); border-radius: 50%; position: absolute; bottom: 0; right: 0; }
+
+        .chat-info h3 { font-size: 1rem; color: var(--text-main); }
+        .chat-info p { font-size: 0.8rem; color: var(--text-muted); }
+
+        .chat-messages { flex-grow: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
+        .message { max-width: 85%; padding: 12px 16px; border-radius: 8px; font-size: 0.95rem; line-height: 1.4; }
+        .message.bot { background-color: var(--bg-input); color: var(--text-main); align-self: flex-start; border-left: 3px solid var(--accent-purple); }
+        .message.user { background-color: rgba(56, 189, 248, 0.15); color: var(--text-main); align-self: flex-end; border-right: 3px solid var(--accent-blue); }
+
+        .chat-input-area { padding: 15px; border-top: 1px solid var(--border-color); display: flex; gap: 10px; background-color: rgba(0, 0, 0, 0.1); }
+        .chat-input-area input { flex-grow: 1; background-color: var(--bg-input); border: 1px solid var(--border-color); padding: 12px; border-radius: 6px; color: var(--text-main); font-size: 0.95rem; }
+        .chat-input-area input:focus { outline: none; border-color: var(--accent-blue); }
+        .chat-input-area button { background-color: var(--accent-blue); color: var(--bg-main); font-weight: bold; border: none; padding: 0 20px; border-radius: 6px; cursor: pointer; transition: opacity 0.2s; }
+        .chat-input-area button:hover { opacity: 0.9; }
+    </style>
+</head>
+<body>
+
+    <!-- Topbar Header -->
+    <header>
+        <div class="logo">AEGIZ INTELLIGENCE</div>
+        <div class="system-status">
+            <div class="pulse-dot"></div>
+            <span>Orquestrador Ativo (Supabase Shield Layer v1.0.0)</span>
+        </div>
+    </header>
+
+    <!-- Main Workspace Layout -->
+    <main class="workspace">
+        
+        <!-- Left Side: Real-Time Engine Metrics & Security Logs -->
+        <section class="main-panel">
+            
+            <!-- Key Metric Breakdown Cards -->
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <span class="metric-title">Latência Geral</span>
+                    <span class="metric-value blue">340ms</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-title">Leads Capturados</span>
+                    <span class="metric-value purple">1.248</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-title">Faturamento MP</span>
+                    <span class="metric-value green">R$ 4.850</span>
+                </div>
+            </div>
+
+            <!-- Multi-Attribute Entity Table: Sub-Agents Performance Tracker -->
+            <div class="table-container">
+                <div class="panel-heading">Monitoramento de Performance de Subagentes</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Subagente Ativo</th>
+                            <th>Módulo Operacional</th>
+                            <th>Consumo de Token</th>
+                            <th>Status de Orquestração</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Agent Designer</strong></td>
+                            <td>Geração de Layout HTML/CSS</td>
+                            <td>4.2K tokens/méd</td>
+                            <td><span class="badge active">Ativo</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Copywriter Engine</strong></td>
+                            <td>Estruturação de Redação B2B</td>
+                            <td>2.8K tokens/méd</td>
+                            <td><span class="badge active">Ativo</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Social Architect</strong></td>
+                            <td>Cronograma de Perfis Sociais</td>
+                            <td>0 tokens (Standby)</td>
+                            <td><span class="badge pending">Aguardando</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Multi-Attribute Entity Table: Firewalled Security Logs -->
+            <div class="table-container">
